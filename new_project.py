@@ -20,19 +20,61 @@ if st.button("Run Notebook"):
     headers = {"Authorization": f"Bearer {TOKEN}"}
     payload = {
         "job_id": JOB_ID,
-        "notebook_params": {"STM_FILE_PATH": param1, "SOURCE_FILE_PATH": param2, "OUTPUT_FILE_PATH": param3}
+        "notebook_params": {
+            "STM_FILE_PATH": param1,
+            "SOURCE_FILE_PATH": param2,
+            "OUTPUT_FILE_PATH": param3
+        }
     }
-    response = requests.post(f"{DATABRICKS_INSTANCE}/api/2.1/jobs/run-now", json=payload, headers=headers)
-    run_id = response.json().get("run_id")
-    st.write(f"Job started with run_id: {run_id}")
 
-    # Poll status
-    while True:
-        status_resp = requests.get(f"{DATABRICKS_INSTANCE}/api/2.1/jobs/runs/get?run_id={run_id}", headers=headers)
-        state = status_resp.json()["state"]["life_cycle_state"]
-        st.write(f"Current status: {state}")
-        if state in ["TERMINATED", "SKIPPED", "INTERNAL_ERROR"]:
-            break
-        time.sleep(5)
+    try:
+        response = requests.post(f"{DATABRICKS_INSTANCE}/api/2.1/jobs/run-now",
+                                 json=payload, headers=headers)
 
-    st.success("Job completed!")
+        # Check if response is JSON
+        if response.status_code != 200:
+            st.error(f"API Error: {response.status_code}")
+            st.write("Response:", response.text)
+        else:
+            try:
+                data = response.json()
+                run_id = data.get("run_id")
+                if not run_id:
+                    st.error("No run_id returned. Response:")
+                    st.write(data)
+                else:
+                    st.success(f"Job started with run_id: {run_id}")
+
+                    # Poll job status
+                    while True:
+                        status_resp = requests.get(
+                            f"{DATABRICKS_INSTANCE}/api/2.1/jobs/runs/get?run_id={run_id}",
+                            headers=headers
+                        )
+
+                        if status_resp.status_code != 200:
+                            st.error(f"Status API Error: {status_resp.status_code}")
+                            st.write(status_resp.text)
+                            break
+
+                        status_data = status_resp.json()
+                        state = status_data.get("state", {}).get("life_cycle_state", "UNKNOWN")
+                        st.write(f"Current status: {state}")
+
+                        if state in ["TERMINATED", "SKIPPED", "INTERNAL_ERROR"]:
+                            result_state = status_data.get("state", {}).get("result_state", "UNKNOWN")
+                            st.write(f"Result state: {result_state}")
+                            if result_state == "SUCCESS":
+                                st.success("Job completed successfully!")
+                            else:
+                                st.error(f"Job ended with state: {result_state}")
+                            break
+
+                        time.sleep(5)
+
+            except ValueError:
+                st.error("Invalid JSON response from API")
+                st.write(response.text)
+
+    except Exception as e:
+        st.error(f"Unexpected error: {e}")
