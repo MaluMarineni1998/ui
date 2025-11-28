@@ -4,7 +4,7 @@ import requests
 import time
 
 # Databricks credentials
-DATABRICKS_INSTANCE = "https://community.cloud.databricks.com"
+DATABRICKS_INSTANCE = "https://dbc-7c82be33-847c.cloud.databricks.com"
 TOKEN = "dapi971adb4aab9fff1b477651ac822c06fc"
 JOB_ID = "45166209390535"
 
@@ -78,4 +78,5 @@ if st.button("Run Notebook"):
 
     except Exception as e:
         st.error(f"Unexpected error: {e}")
+
 
