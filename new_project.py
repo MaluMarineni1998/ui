@@ -21,9 +21,9 @@ if st.button("Run Notebook"):
     payload = {
         "job_id": JOB_ID,
         "notebook_params": {
-            "STM_FILE_PATH": "param1",
-            "SOURCE_FILE_PATH": "param2",
-            "OUTPUT_FILE_PATH": "param3"
+            "STM_FILE_PATH": param1,
+            "SOURCE_FILE_PATH": param2,
+            "OUTPUT_FILE_PATH": param3
         }
     }
 
@@ -78,6 +78,7 @@ if st.button("Run Notebook"):
 
     except Exception as e:
         st.error(f"Unexpected error: {e}")
+
 
 
 
