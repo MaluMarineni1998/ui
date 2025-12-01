@@ -28,7 +28,7 @@ if st.button("Run Notebook"):
     }
 
     try:
-        response = requests.post(f"{DATABRICKS_INSTANCE}/api/2.1/jobs/run-now",
+        response = requests.post(f"{DATABRICKS_INSTANCE}/api/2.2/jobs/run-now",
                                  json=payload, headers=headers)
 
         # Check if response is JSON
@@ -78,6 +78,7 @@ if st.button("Run Notebook"):
 
     except Exception as e:
         st.error(f"Unexpected error: {e}")
+
 
 
 
