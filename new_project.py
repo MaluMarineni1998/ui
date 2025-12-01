@@ -14,6 +14,10 @@ st.title("START VALIDATION")
 param1 = st.text_input("STM file path:")
 param2 = st.text_input("Source file path:")
 param3 = st.text_input("Output Path:")
+param4 = st.text_input("SOURCE_TABLE:")
+param5 = st.text_input("TARGET_TABLE:")
+param6 = st.text_input("PRIMARY_KEYS:")  
+param7 = st.text_input("SCD_TYPE:")
 
 if st.button("Run Notebook"):
     st.write("Triggering Databricks job...")
@@ -23,7 +27,11 @@ if st.button("Run Notebook"):
         "notebook_params": {
             "STM_FILE_PATH": param1,
             "SOURCE_FILE_PATH": param2,
-            "OUTPUT_FILE_PATH": param3
+            "OUTPUT_FILE_PATH": param3,
+            "SOURCE_TABLE": param4,
+            "TARGET_TABLE": param5,
+            "PRIMARY_KEYS": param6,
+            "SCD_TYPE": param7
         }
     }
 
@@ -48,7 +56,7 @@ if st.button("Run Notebook"):
                     # Poll job status
                     while True:
                         status_resp = requests.get(
-                            f"{DATABRICKS_INSTANCE}/api/2.1/jobs/runs/get?run_id={run_id}",
+                            f"{DATABRICKS_INSTANCE}/api/2.2/jobs/runs/get?run_id={run_id}",
                             headers=headers
                         )
 
@@ -70,7 +78,7 @@ if st.button("Run Notebook"):
                                 st.error(f"Job ended with state: {result_state}")
                             break
 
-                        time.sleep(5)
+                        time.sleep(60)
 
             except ValueError:
                 st.error("Invalid JSON response from API")
@@ -78,6 +86,7 @@ if st.button("Run Notebook"):
 
     except Exception as e:
         st.error(f"Unexpected error: {e}")
+
 
 
 
