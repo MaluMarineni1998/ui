@@ -5,7 +5,7 @@ import time
 
 # Databricks credentials
 DATABRICKS_INSTANCE = "https://dbc-7c82be33-847c.cloud.databricks.com"
-TOKEN = "dapi971adb4aab9fff1b477651ac822c06fc"
+TOKEN = "dapib0936ff745e3a10c23c4b0264876090e"
 JOB_ID = "813058467048815"
 
 st.title("START VALIDATION")
@@ -86,6 +86,7 @@ if st.button("Run Notebook"):
 
     except Exception as e:
         st.error(f"Unexpected error: {e}")
+
 
 
 
